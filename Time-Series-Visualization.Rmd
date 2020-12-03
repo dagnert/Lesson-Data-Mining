@@ -100,6 +100,7 @@ You can read the data into R with the following script:
 
 ```{r, echo=TRUE, cache=TRUE}
 retaildata <- readxl::read_excel("data/retail.xlsx", skip = 1)
+view(retaildata)
 ```
 
 The second argument (`skip=1`) is required because the Excel sheet has two header rows.
@@ -107,20 +108,24 @@ The second argument (`skip=1`) is required because the Excel sheet has two heade
 Select one of the time series as follows (but replace the column name with your own chosen column):
 
 ```{r, echo=TRUE, cache=TRUE}
-myts <- ts(retaildata[, "A3349873A"], frequency = 12, start = c(1982, 4))
+myts <- ts(retaildata[, "A3349640L"], frequency = 12, start = c(1982, 4))
 ```
 
 Explore your chosen retail time series using the following functions: `autoplot`, `ggseasonplot`, `ggsubseriesplot`, `gglagplot`, `ggAcf`
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(myts)
+ggseasonplot(myts)
+ggsubseriesplot(myts)
+gglagplot(myts)
+ggAcf(myts)
 ```
 
 **Can you spot any seasonality, cyclicity and trend? What do you learn about the series?**
 
 Your answer:
-
+ANSEWR MISSING -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Exercise 4
 Create time plots of the following time series: goog, writing, fancy, a10, h02.
@@ -130,6 +135,15 @@ Create time plots of the following time series: goog, writing, fancy, a10, h02.
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
 # to do
+help("goog") #closing stock prices of GOOG
+help("writing") #industry sales for printing an writing paper
+help("fancy") #monthly sales for a souvenir shop
+help("a10") #monthly government expenditure as part of the Pharmaceutical Benefit Scheme for products falling under ATC code A10
+help("h02") #monthly government expenditure as part of the Pharmaceutical Benefit Scheme for products falling under ATC code H02
+
+autoplot(goog) +
+ggtitle("Closing stock prices of GOOG") +
+xlab("Day") + ylab("Price in $")
 
 ```
 
@@ -142,37 +156,41 @@ Use the `ggseasonplot` and `ggsubseriesplot` functions to explore the seasonal p
 ```{r, echo=TRUE}
 # writing
 # to do
-
+ggseasonplot(writing)
+ggsubseriesplot(writing)
 ```
 
-Your answer:
+Your answer:Noticeable drop in August
 
 
 ```{r, echo=TRUE}
 # fancy
 # to do
-
+ggseasonplot(fancy)
+ggsubseriesplot(fancy)
 ```
 
-Your answer:#
+Your answer:Noticeable increase from October to December
 
 
 ```{r, echo=TRUE}
 # a10
 # to do
-
+ggseasonplot(a10)
+ggsubseriesplot(a10)
 ```
 
-Your answer:
+Your answer: Decrease from January to February, 1991 just has data till June
 
 
 ```{r, echo=TRUE}
 # h02
 # to do
-
+ggseasonplot(h02)
+ggsubseriesplot(h02)
 ```
 
-Your answer:
+Your answer: Extreme decrease from January to February, then increase till December, 1991 just has data from July to December
 
 
 # Exercise 5
@@ -198,7 +216,11 @@ ggAcf(hsales)
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(usdeaths)
+ggseasonplot(usdeaths)
+ggsubseriesplot(usdeaths)
+gglagplot(usdeaths)
+ggAcf(usdeaths)
 ```
 
 Your answer:
@@ -206,7 +228,11 @@ Your answer:
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(bricksq)
+ggseasonplot(bricksq)
+ggsubseriesplot(bricksq)
+gglagplot(bricksq)
+ggAcf(bricksq)
 ```
 
 Your answer:
@@ -214,7 +240,11 @@ Your answer:
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(sunspotarea)
+ggseasonplot(sunspotarea)
+ggsubseriesplot(sunspotarea)
+gglagplot(sunspotarea)
+ggAcf(sunspotarea)
 ```
 
 Your answer:
@@ -222,7 +252,11 @@ Your answer:
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(gasoline)
+ggseasonplot(gasoline)
+ggsubseriesplot(gasoline)
+gglagplot(gasoline)
+ggAcf(gasoline)
 ```
 
 Your answer:
@@ -246,7 +280,9 @@ ggAcf(y)
 
 ```{r, echo=TRUE, cache=TRUE}
 # todo
-
+mypigs <- window(pigs, start=1990)
+autoplot(mypigs)
+ggAcf(mypigs)
 ```
 
 Your answer:
@@ -258,7 +294,9 @@ Your answer:
 
 ```{r}
 # todo
-
+ddj<-diff(dj)
+autoplot(ddj)
+ggAcf(ddj)
 ```
 
 Your answer:
