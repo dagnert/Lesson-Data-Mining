@@ -28,7 +28,9 @@ Use the help menu to explore what the series `gold`, `woolyrnq` and `gas` repres
 ```{r, echo=TRUE, cache=TRUE, eval=FALSE}
 help(gold)
 # to do
-# Test
+help("gold") #Daily morning gold prices in US dollars. 1 January 1985 - 31 March 1989.
+help("woolyrnq") #Quarterly production of woollen yarn in Australia: tonnes. Mar 1965 - Sep 1994.
+help("gas") #Australian monthly gas production: 1956-1995.
 
 ```
 
@@ -36,7 +38,9 @@ Use `autoplot` to plot each of these in separate plots.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(gold)
+autoplot(woolyrnq)
+autoplot(gas)
 ```
 
 **What is the frequency of each commodity series?**
@@ -44,7 +48,9 @@ Hint: apply the `frequency()` function.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+frequency(gold) #täglich
+frequency(woolyrnq) #quartalsweise
+frequency(gas) #monatlich
 ```
 
 Use `which.max()` to spot the outlier in the `gold` series. 
@@ -52,7 +58,7 @@ Use `which.max()` to spot the outlier in the `gold` series.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+which.max(gold) #outlier ist 770
 ```
 
 # Exercise 2 
@@ -76,14 +82,14 @@ Construct time series plots of each of the three series and use 'facets = TRUE' 
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(mytimeseries, facets = TRUE)
 ```
 
 Check what happens when you don't include `facets=TRUE`.
 
 ```{r, echo=TRUE, cache=TRUE, dependson="exmyts"}
 # to do
-
+autoplot(mytimeseries) #Zeitreihen werden in einem Chart visualisiert
 ```
 
 # Exercise 3
