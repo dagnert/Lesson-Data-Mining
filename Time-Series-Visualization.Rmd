@@ -3,15 +3,18 @@ title: "Homework 1 - Time Series Visualization"
 author: "Prof. Dr. Stephan Trahasch"
 date: 'Submission date: 17.12.2020'
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  word_document:
+    toc: yes
+    toc_depth: '3'
   html_document:
     theme: cerulean
     css: styles/homework.css
     toc: yes
     toc_depth: 3
     toc_float: yes
-  word_document:
-    toc: yes
-    toc_depth: '3'
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE)

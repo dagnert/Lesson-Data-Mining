@@ -1,6 +1,6 @@
 ---
 title: "Homework 1 - Time Series Toolbox"
-author: "Prof. Dr. Stephan Trahasch"
+author: "Tizian Dagner"
 date: 'Submission date: 17.12.2020'
 output:
   html_document:
@@ -32,8 +32,10 @@ For the following series, find an appropriate Box-Cox (?BoxCox) transformation i
   * `enplanements`
 
 ```{r}
-# todo
- 
+autoplot(usnetelec)
+autoplot(usgdp)
+autoplot(mcopper)
+autoplot(enplanements)
 ```
 
 
@@ -42,11 +44,10 @@ For the following series, find an appropriate Box-Cox (?BoxCox) transformation i
 Why is a Box-Cox transformation unhelpful for the `cangas` data?
 
 ```{r}
-# todo
- 
+autoplot(cangas)
 ```
 Your answer:
-
+Hilfreich bei steigender Varianz über die Zeit, hier jedoch nur temporär höhere Varianz, davor und danach jedoch klein.
 
 
 # Exercise 3
@@ -56,7 +57,7 @@ What Box-Cox transformation would you select for **your** retail data from Exerc
 ```{r}
 # Example 
 retaildata <- readxl::read_excel("data/retail.xlsx", skip=1)
-myts <- ts(retaildata[,"A3349873A"], frequency=12, start=c(1982,4))
+myts <- ts(retaildata[,"A3349640L"], frequency=12, start=c(1982,4))
 autoplot(myts)
 myts %>% BoxCox(lambda = 0) %>% autoplot()
 ```
@@ -66,26 +67,31 @@ From visual inspection, a log transformation would be appropriate here. It also 
 If you have selected a different series from the retail data set, you might choose a different transformation.
 
 Your answer:
-
+OPEN------------------------------------------------------------------
 
 # Exercise 4
 
 Calculate the residuals (?residuals) from a seasonal naive forecast applied to the quarterly Australian beer production data from 1992. The following code will help.
 
 ```{r}
-# todo
- 
+(?residuals)
+help("ausbeer")
+beer_forec = snaive(ausbeer, h=40)
+residu = residuals(beer_forec)
+
+autoplot(ausbeer)
+autoplot(beer_forec)
 ```
 
 Test if the residuals are white noise and normally distributed.
 
 ```{r}
-#checkresiduals(fc)
+checkresiduals(beer_forec)
 ```
 
 What do you conclude?
 
-Your answer:
+Your answer: Residuals sind nicht nur white noise (Correlogram) -> kein gutes Modell für eine Vorhersage
 
 
 # Exercise 5
@@ -94,23 +100,23 @@ Are the following statements true or false? Explain your answer.
 
 > a. Good forecast methods should have normally distributed residuals.
 
-Your answer:
+Your answer: True, einfacher die Vorhersage-Intervalle zu berechnen
 
 > b. A model with small residuals will give good forecasts.
 
-Your answer:
+Your answer: True, Residuals = Abweichung Vorhersage zu wahren Werten -> je kleiner die Residuals, desto genauer die Vorhersage
 
 > c. The best measure of forecast accuracy is MAPE.
 
-Your answer:
+Your answer: False, abhängig vom Mittleren Abweichungsquadrat
 
 > d. If your model doesn't forecast well, you should make it more complicated.
 
-Your answer:
+Your answer: False, eventuell ist das Modell nur durch Ausreißer oder schlechte Vorverarbeitung schlecht.
 
 > e. Always choose the model with the best forecast accuracy as measured on the test set.
 
-Your answer:
+Your answer: Nicht eindeutig lösbar, da abhängig von der Ähnlichkeit zwischen Test- und Realdaten
 
 # Exercise 6
 
@@ -120,7 +126,7 @@ Split the data into two parts using
 
 ```{r}
 retaildata <- readxl::read_excel("data/retail.xlsx", skip=1)
-myts <- ts(retaildata[,"A3349873A"], frequency=12, start=c(1982,4))
+myts <- ts(retaildata[,"A3349640L"], frequency=12, start=c(1982,4))
 myts.train <- window(myts, end=c(2010,12))
 myts.test <- window(myts, start=2011)
 ```
@@ -136,16 +142,17 @@ autoplot(myts) +
 Calculate forecasts using `snaive` applied to `myts.train`.
 
 ```{r}
-# todo
- 
+fc_train = snaive(myts.train)
+fc_test = snaive(myts.test)
 ```
 
 Compare the accuracy of your forecasts against the actual values stored in `myts.test`.
 (?accuracy) 
 
 ```{r}
-# todo
- 
+(?accuracy)
+accuracy(fc_train)
+accuracy(fc_test)
 ```
 
 The number to look at here is the test set RMSE of 71.443. That provides a benchmark for comparison when we try other models.
@@ -153,15 +160,14 @@ The number to look at here is the test set RMSE of 71.443. That provides a bench
 Check the residuals. Do the residuals appear to be uncorrelated and normally distributed?
 
 ```{r}
-# todo
- 
+checkresiduals(fc_train)
 ```
 
-Your answer:
+Your answer: OPEN-------------------------------
 
 
 How sensitive are the accuracy measures to the training/test split?
-
+OPEN-------------------------------
 
 # Exercise 7
 
@@ -178,8 +184,9 @@ train3 <- window(visnights[, "QLDMetro"], end = c(2015, 1))
 Compute one year of forecasts for each training set using the `snaive()` method. Call these `fc1`, `fc2` and `fc3`, respectively.
 
 ```{r}
-# todo
- 
+fc1 = snaive(train1)
+fc2 = snaive(train2)
+fc3 = snaive(train3)
 ```
 
 Use `accuracy()` to compare the MAPE over the three test sets. Comment on these.
@@ -187,8 +194,9 @@ First we will copy the actual data into a variable. Then we can do an accuracy c
 
 ```{r}
 qld <- visnights[, "QLDMetro"]
-# todo
- 
+accuracy(fc1, qld)
+accuracy(fc2, qld)
+accuracy(fc3, qld)
 ```
 
 This should give similar results to this consolidated results table.
@@ -210,8 +218,9 @@ Use the Dow Jones index (data set `dowjones`) to do the following:
 Produce a time plot of the series.
 
 ```{r}
+help(dowjones)
 # todo
- 
+autoplot(dowjones) 
 ```
 
 Produce forecasts using the drift method and plot them.
@@ -221,7 +230,8 @@ Let's assume we want to forecast the next 5, 10 and 15 values.
 ```{r}
 dowfc1 <- rwf(dowjones, drift=TRUE, h=5)
 # todo
- 
+dowfc2 <- rwf(dowjones, drift=TRUE, h=10)
+dowfc3 <- rwf(dowjones, drift=TRUE, h=15)
 ```
 
 Then we can plot these values.
@@ -258,10 +268,17 @@ The time series isn't seasonal, so the seasonal naive method is not viable. Howe
 
 ```{r}
 # todo
- 
+fc_mean <- meanf(dowjones)
+fc_naive <- naive(dowjones)
+
+autoplot(fc_mean)
+autoplot(fc_naive)
+
+accuracy(fc_mean)
+accuracy(fc_naive)
 ```
 
-The three values will be very different here. The Mean will use the data set, so is unlikely to follow the current trendline.
+The three values will be very different here. The Mean will use the data set, so is unlikely to follow the current trendline. -> Naive ist deutlich genauer, da eine deutlich geringere Streuung der Vorhersage vorliegt.
 
 # Exercise 9
 
@@ -270,15 +287,16 @@ Consider the daily closing IBM stock prices (data set `ibmclose`).
 Produce some plots of the data in order to become familiar with it.
 
 ```{r}
-# todo
- 
+autoplot(ibmclose)
+ggAcf(ibmclose)
+gglagplot(ibmclose)
 ```
 
 Split the data into a training set of 300 observations and a test set of 69 observations.
 
 ```{r}
-# todo
- 
+ibm.train <- window(ibmclose, end=300)
+ibm.test <- window(ibmclose, start=301)
 ```
 
 Try using various benchmark methods to forecast the training set and compare the results on the test set. Which method did best?
@@ -288,7 +306,8 @@ Try using various benchmark methods to forecast the training set and compare the
 h <- length(ibm.test)
 m.f <- meanf(ibm.train, h=h)
 # todo
- 
+rw.f <- naive(ibm.train, h=h)
+rwd.f <- rwf(ibm.train, drift=TRUE, h=h) 
 
 
 autoplot(ibmclose) +
@@ -300,17 +319,18 @@ autoplot(ibmclose) +
 
 # accuracy(m.f,ibm.test)
 # todo
- 
+accuracy(m.f, ibm.test)
+accuracy(rw.f, ibm.test)
+accuracy(rwd.f, ibm.test) 
 ```
 
 
 Check the residuals of your preferred method. Do they resemble white noise?
 
 ```{r}
-# todo
- 
+checkresiduals(rwd.f)
 ```
-
+Weißt Ähnlichkeiten zu white noise auf, jedoch nicht eindeutig identifizierbar
 
 # Exercise 10
 
@@ -319,22 +339,34 @@ Consider the sales of new one-family houses in the USA, Jan 1973 -- Nov 1995 (da
 Produce some plots of the data in order to become familiar with it.
 
 ```{r}
-# todo
- 
+print(hsales)
+autoplot(hsales)
+ggAcf(hsales)
 ```
 
 Split the `hsales` data set into a training set and a test set, where the test set is the last two years of data.
 
 ```{r}
-# todo
- 
+sales.train <- window(hsales, end=1993)
+sales.test <- window(hsales, start=1994)
+
+autoplot(sales.train)
+autoplot(sales.test)
 ```
 
 Try using various benchmark methods to forecast the training set and compare the results on the test set. Which method did best?
 
 ```{r}
-# todo
- 
+h <- length(sales.test)
+salesMean.f <- meanf(sales.train, h=h)
+salesNaive.f <- naive(sales.train, h=h)
+salesSnaive.f <- snaive(sales.train, h=h)
+salesDrift.f <- rwf(sales.train, drift=TRUE, h=h)
+
+accuracy(salesMean.f, sales.test)
+accuracy(salesNaive.f, sales.test)
+accuracy(salesSnaive.f, sales.test)
+accuracy(salesDrift.f, sales.test)
 ```
 
 In terms of accuracy measures on the test set, the seasonal naive method does better.
@@ -343,7 +375,7 @@ Check the residuals of your preferred method. Do they resemble white noise?
 
 ```{r eval = FALSE}
 # remove eval=FALSE
-checkresiduals(sn.f)
+checkresiduals(salesSnaive.f)
 ```
-
+Kein eindeutiges Indiz für white noise, Korrelation ändert sich von positiv zu negativ
 
