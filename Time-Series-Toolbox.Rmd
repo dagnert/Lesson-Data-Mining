@@ -32,16 +32,13 @@ For the following series, find an appropriate Box-Cox (?BoxCox) transformation i
   * `enplanements`
 
 ```{r}
- plot(usnetelec)
- plot(usgdp)
- plot(mcopper)
+plot(usnetelec)
+plot(usgdp)
+plot(mcopper)
+plot(enplanements)
  
- lambda_mcopper = BoxCox.lambda(mcopper)
- plot(BoxCox(mcopper,lambda_mcopper))
- 
- plot(enplanements)
- lambda_enplanements = BoxCox.lambda(enplanements)
- plot(BoxCox(enplanements,lambda_enplanements))
+plot(BoxCox(mcopper, lambda="auto"))
+plot(BoxCox(enplanements, lambda="auto"))
 ```
 
 
@@ -50,9 +47,9 @@ For the following series, find an appropriate Box-Cox (?BoxCox) transformation i
 Why is a Box-Cox transformation unhelpful for the `cangas` data?
 
 ```{r}
- plot(cangas) 
- lambda_cangas = BoxCox.lambda(cangas)
- plot(BoxCox(cangas,lambda_cangas))
+plot(cangas) 
+BoxCox.lambda(cangas)
+autoplot(BoxCox(cangas, lambda="auto"))
 ```
 Your answer:
 Helpful for increasing variance over time, but here only temporarily higher variance, but before and after small.
@@ -66,8 +63,10 @@ What Box-Cox transformation would you select for **your** retail data from Exerc
 # Example 
 retaildata <- readxl::read_excel("data/retail.xlsx", skip=1)
 myts <- ts(retaildata[,"A3349640L"], frequency=12, start=c(1982,4))
-autoplot(myts)
-myts %>% BoxCox(lambda = 0) %>% autoplot()
+plot(myts)
+myts %>% BoxCox(lambda = 0) %>% plot()
+myts %>% BoxCox(lambda = "auto") %>% plot()
+myts %>% BoxCox(lambda = 0.5) %>% plot()
 ```
 
 From visual inspection, a log transformation would be appropriate here. It also makes sense, as retail expenditure is likely to increase proportionally to population, and therefore the seasonal fluctuations are likely to be proportional to the level of the series. It has the added advantage of being easier to explain than some other transformations. Finally, it is relatively close to the automatically selected value of `BoxCox.lambda(myts)` $= `r round(BoxCox.lambda(myts),3)`$.
@@ -75,7 +74,7 @@ From visual inspection, a log transformation would be appropriate here. It also 
 If you have selected a different series from the retail data set, you might choose a different transformation.
 
 Your answer:
-OPEN------------------------------------------------------------------
+From visual inspection, a natural log transformation would be appropriate here. It is also relatively close to the automatically selected value of BoxCoc Lambda.
 
 # Exercise 4
 
@@ -99,7 +98,7 @@ checkresiduals(beer_forec)
 
 What do you conclude?
 
-Your answer: Residuals sind nicht nur white noise (Correlogram) -> kein gutes Modell f?r eine Vorhersage
+Your answer: The acf seems to be too high in places to be white noise. There seems to be information left in the residuals that should be used in the forecast.
 
 
 # Exercise 5
@@ -108,23 +107,23 @@ Are the following statements true or false? Explain your answer.
 
 > a. Good forecast methods should have normally distributed residuals.
 
-Your answer: True, einfacher die Vorhersage-Intervalle zu berechnen
+Your answer: False, they should be uncorrelated
 
 > b. A model with small residuals will give good forecasts.
 
-Your answer: True, Residuals = Abweichung Vorhersage zu wahren Werten -> je kleiner die Residuals, desto genauer die Vorhersage
+Your answer: False, there could be other factors (e.g. bad training data, overfitting)
 
 > c. The best measure of forecast accuracy is MAPE.
 
-Your answer: False, abh?ngig vom Mittleren Abweichungsquadrat
+Your answer: False, depends on RMSE
 
 > d. If your model doesn't forecast well, you should make it more complicated.
 
-Your answer: False, eventuell ist das Modell nur durch Ausrei?er oder schlechte Vorverarbeitung schlecht.
+Your answer: False, possibly the model is only bad due to outliers or bad preprocessing.
 
 > e. Always choose the model with the best forecast accuracy as measured on the test set.
 
-Your answer: Nicht eindeutig l?sbar, da abh?ngig von der ?hnlichkeit zwischen Test- und Realdaten
+Your answer: Not unambiguously solvable, since it depends on the similarity between test and training data
 
 # Exercise 6
 
@@ -171,11 +170,10 @@ Check the residuals. Do the residuals appear to be uncorrelated and normally dis
 checkresiduals(fc_train)
 ```
 
-Your answer: OPEN-------------------------------
+Your answer: The residuals seem way too high and definitely correlated.
 
 
 How sensitive are the accuracy measures to the training/test split?
-OPEN-------------------------------
 
 # Exercise 7
 
@@ -192,9 +190,9 @@ train3 <- window(visnights[, "QLDMetro"], end = c(2015, 1))
 Compute one year of forecasts for each training set using the `snaive()` method. Call these `fc1`, `fc2` and `fc3`, respectively.
 
 ```{r}
-fc1 = snaive(train1)
-fc2 = snaive(train2)
-fc3 = snaive(train3)
+fc1 = snaive(train1, h=4)
+fc2 = snaive(train2, h=4)
+fc3 = snaive(train3, h=4)
 ```
 
 Use `accuracy()` to compare the MAPE over the three test sets. Comment on these.
@@ -276,17 +274,28 @@ The time series isn't seasonal, so the seasonal naive method is not viable. Howe
 
 ```{r}
 # todo
-fc_mean <- meanf(dowjones)
-fc_naive <- naive(dowjones)
+naive_dowjones_5 <- naive(dowjones, h = 5)
+naive_dowjones_10 <- naive(dowjones, h = 10)
+naive_dowjones_15 <- naive(dowjones, h = 15)
+mean_dowjones_5 <- meanf(dowjones, h = 5)
+mean_dowjones_10 <- meanf(dowjones, h = 10)
+mean_dowjones_15 <- meanf(dowjones, h = 15)
 
-autoplot(fc_mean)
-autoplot(fc_naive)
 
-accuracy(fc_mean)
-accuracy(fc_naive)
+autoplot(dowjones) +
+  autolayer(naive_dowjones_5, PI=FALSE)+
+  autolayer(naive_dowjones_10, PI=FALSE)+
+  autolayer(naive_dowjones_15, PI=FALSE)+
+  autolayer(mean_dowjones_5, PI=FALSE)+
+  autolayer(mean_dowjones_10, PI=FALSE)+
+  autolayer(mean_dowjones_15, PI=FALSE)+
+  xlab("Time") + ylab("Closing Price (US$)")+
+  ggtitle("Dow Jones index") +
+  guides(colour=guide_legend(title="Forecast"))
 ```
 
-The three values will be very different here. The Mean will use the data set, so is unlikely to follow the current trendline. -> Naive ist deutlich genauer, da eine deutlich geringere Streuung der Vorhersage vorliegt.
+The three values will be very different here. The Mean will use the data set, so is unlikely to follow the current trendline.
+-> Naive seems to be more accurate, since there is a much smaller dispersion of the prediction.
 
 # Exercise 9
 
@@ -338,7 +347,7 @@ Check the residuals of your preferred method. Do they resemble white noise?
 ```{r}
 checkresiduals(rwd.f)
 ```
-Wei?t ?hnlichkeiten zu white noise auf, jedoch nicht eindeutig identifizierbar
+Exhibits similarities to white noise, but not clearly identifiable
 
 # Exercise 10
 
@@ -376,6 +385,7 @@ accuracy(salesNaive.f, sales.test)
 accuracy(salesSnaive.f, sales.test)
 accuracy(salesDrift.f, sales.test)
 ```
+->beste result has snaive
 
 In terms of accuracy measures on the test set, the seasonal naive method does better.
 
@@ -385,5 +395,5 @@ Check the residuals of your preferred method. Do they resemble white noise?
 # remove eval=FALSE
 checkresiduals(salesSnaive.f)
 ```
-Kein eindeutiges Indiz f?r white noise, Korrelation ?ndert sich von positiv zu negativ
+doesn't look like white noise, but a noticeable change from positiv to negative.The limit of correlation is exceeded, but in combination with the described trend and not arbitrarily.
 
