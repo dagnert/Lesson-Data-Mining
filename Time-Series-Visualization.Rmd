@@ -51,9 +51,9 @@ Hint: apply the `frequency()` function.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-frequency(gold) #täglich
-frequency(woolyrnq) #quartalsweise
-frequency(gas) #monatlich
+frequency(gold) #daily
+frequency(woolyrnq) #quarterly
+frequency(gas) #monthly
 ```
 
 Use `which.max()` to spot the outlier in the `gold` series. 
@@ -61,7 +61,7 @@ Use `which.max()` to spot the outlier in the `gold` series.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-which.max(gold) #outlier ist 770
+which.max(gold) #outlier is 770
 ```
 
 # Exercise 2 
@@ -92,7 +92,7 @@ Check what happens when you don't include `facets=TRUE`.
 
 ```{r, echo=TRUE, cache=TRUE, dependson="exmyts"}
 # to do
-autoplot(mytimeseries) #Zeitreihen werden in einem Chart visualisiert
+autoplot(mytimeseries) #time series will be visualized in a chart
 ```
 
 # Exercise 3
@@ -128,7 +128,7 @@ ggAcf(myts)
 **Can you spot any seasonality, cyclicity and trend? What do you learn about the series?**
 
 Your answer:
-ANSEWR MISSING -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The trend is going up over the total duration. A little cyclicity can be seen over a single year, where the values increases within the year. In almost every year is a decrease from Jan to Feb. The season plot was helpful, especially in combination with subseriesplot. 
 
 # Exercise 4
 Create time plots of the following time series: goog, writing, fancy, a10, h02.
@@ -227,6 +227,10 @@ ggAcf(usdeaths)
 ```
 
 Your answer:
++ Seasonality evident in all plots 
++ not enough data to identify cyclicity
++ No trend
++ Due to higher temperatures and tourism numbers, death toll could be higher
 
 
 ```{r, echo=TRUE, cache=TRUE}
@@ -240,6 +244,10 @@ ggAcf(bricksq)
 
 Your answer:
 
++ Seasonality visible in subseriesplot and Acf plot. First and last Quarter is a little lower.
++ Trend is visible in autoplot and subseriesplot. The first years the brick production is growing.
++ Cylicity visible in autoplot after the years 1975. There are two big decreases in clay brick production which have the same form.
+
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
@@ -251,6 +259,8 @@ ggAcf(sunspotarea)
 ```
 
 Your answer:
+
+Error in seasonalplot, as there are no seasonal data
 
 
 ```{r, echo=TRUE, cache=TRUE}
@@ -264,6 +274,8 @@ ggAcf(gasoline)
 
 Your answer:
 
+Error in subseriesplot, each season requires at least 2 observations. This may be caused from specifying a time-series with non-integer frequency. 
+
 
 # Exercise 6
 
@@ -273,23 +285,23 @@ The `pigs` data shows the monthly total number of pigs slaughtered in Victoria, 
 # White noise
 set.seed(1711)
 y <- ts(rnorm(50))
+```
+
+```{r}
+mypigs <- window(pigs, start=1990)
 autoplot(y) + ggtitle("White noise")
+autoplot(mypigs) + ggtitle("Pigs")
 ```
 
 ```{r}
 ggAcf(y)
-```
-
-
-```{r, echo=TRUE, cache=TRUE}
-# todo
-mypigs <- window(pigs, start=1990)
-autoplot(mypigs)
 ggAcf(mypigs)
 ```
 
-Your answer:
 
+Your answer: the autoplot shows a little trend, the slaughtered pigs increased over the years
+In the second Acf plot are three values above the line -> indicates whitenoise series.
+Therefore the y series is no whitenoise.
 
 # Exercise 7
 
@@ -303,4 +315,4 @@ ggAcf(ddj)
 ```
 
 Your answer:
-
+The autoplot seems to show some white noise, Acf shows the 6th leg as an indicator for white noise. But this may not be the only reason.
